@@ -35,10 +35,8 @@ Following an approved leave in Week 8, this combined report covers the progress 
 
 ---
 
-### 3. Amazon Warehouse: Nav2 AGV Porting
-* Deployed the official Amazon Warehouse map ($279 \\times 415$, resolution $0.05\\text{ m/px}$, origin `[-6.93, -10.4, 0.0]`).
-* Deployed the authentic Orange Amazon Kiva AGV URDF ($0.65\\text{ m} \\times 0.52\\text{ m} \\times 0.18\\text{ m}$).
-* Configured high-resolution rolling local costmap ($3.0\\text{ m} \\times 3.0\\text{ m}$) for narrow-aisle collision avoidance.
+### 3. Amazon Warehouse: Nav2 Integration (In Progress)
+* Work is currently in progress to port and set up the Nav2 navigation stack for the Amazon Warehouse exercise.
 
 ---
 
@@ -49,5 +47,6 @@ Following an approved leave in Week 8, this combined report covers the progress 
 ---
 
 ## Next Steps
+* **Amazon Warehouse Nav2 Integration:** Complete and test the Nav2 pipeline for the Amazon Warehouse exercise.
 * **RoboticsAcademy Package Integration:** Standardize launch scripts and configurations for upstream `RoboticsInfrastructure`.
 * **Web-GUI Bridge Testing:** Verify end-to-end communication with the RoboticsAcademy browser frontend interface (`/webgui/current_target`).

@@ -8,7 +8,7 @@ published: true
 
 Following an approved leave in Week 8, this combined report covers the progress made across **Weeks 8 and 9**. Our primary milestone was upgrading and standardizing the **JdeRobot RoboticsAcademy** navigation challenges using the **ROS 2 Humble Nav2 (Navigation 2) Stack**.
 
-We completed the full multi-layered navigation architecture for the **City Navigation** exercise, validated the pipeline with lead mentor Jose Sir (`jmplaza`), and successfully ported the Nav2 navigation stack to the **Amazon Warehouse** exercise featuring the Orange Amazon Kiva AGV.
+We completed the full multi-layered navigation architecture for the **City Navigation** exercise, validated the pipeline with lead mentor Jose Sir (`jmplaza`), and started porting the Nav2 stack to the **Amazon Warehouse** exercise.
 
 ---
 
@@ -54,13 +54,9 @@ The vehicle remains safely parked at its initial pose until an interactive desti
 
 ---
 
-## 4. Amazon Warehouse: Nav2 AGV Porting
+## 4. Amazon Warehouse: Nav2 Integration (In Progress)
 
-Following the City Navigation milestone, we extended the Nav2 architecture to the **Amazon Warehouse** challenge:
-
-* **Official Warehouse Map:** Loaded the authentic JdeRobot Amazon Warehouse map ($279 \\times 415$ grid, resolution $0.05\\text{ m/px}$, origin `[-6.93, -10.4, 0.0]`).
-* **Orange Amazon Kiva AGV Model:** Deployed the authentic $0.65\\text{ m} \\times 0.52\\text{ m} \\times 0.18\\text{ m}$ Kiva AGV URDF model with top turntable lift plate and drive wheels.
-* **Fine-Grained Narrow-Aisle Planning:** Configured a high-resolution rolling local costmap ($3.0\\text{ m} \\times 3.0\\text{ m}$) with obstacle inflation around storage racks and shelving to enable collision-free AGV navigation through narrow warehouse aisles.
+Work is currently underway to port and configure the Nav2 navigation stack for the **Amazon Warehouse** exercise with the Kiva AGV platform.
 
 ---
 
@@ -70,11 +66,11 @@ Following the City Navigation milestone, we extended the Nav2 architecture to th
 | :--- | :--- | :--- |
 | **Visual Flickering in RViz2** | Legacy background simulation processes and duplicate RViz instances were publishing conflicting transforms on `/tf` and `/scan`. | Terminated all orphan processes, implemented a unified single-process architecture, and applied 3D vertical layer stacking ($Z$-offsets) to prevent GPU depth-buffer collision (Z-fighting). |
 | **LaserScan Beam Dropping** | Default decay time ($0\\text{ s}$) caused intermittent frame-rate dropouts over remote display sessions. | Added a $0.2\\text{ s} - 0.3\\text{ s}$ decay buffer to maintain continuous, solid LiDAR beam visualization. |
-| **Resolution Mismatch Across Exercises** | Scale disparity between the City Map ($1.25\\text{ m/px}$) and Amazon Warehouse Map ($0.05\\text{ m/px}$). | Isolated exercise pipelines, ensuring each environment loads its dedicated YAML metadata and tailored local costmap window parameters. |
 
 ---
 
 ## 6. Next Steps
 
-* **RoboticsAcademy Package Integration:** Standardize launch scripts and configurations for City Navigation and Amazon Warehouse to align with upstream `RoboticsInfrastructure` repository conventions.
+* **Amazon Warehouse Nav2 Integration:** Complete and test the Nav2 pipeline for the Amazon Warehouse exercise.
+* **RoboticsAcademy Package Integration:** Standardize launch scripts and configurations for upstream `RoboticsInfrastructure`.
 * **Web-GUI Bridge Testing:** Verify end-to-end communication with the RoboticsAcademy browser frontend interface via `/webgui/current_target`.
