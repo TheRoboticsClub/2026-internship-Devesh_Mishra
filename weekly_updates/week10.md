@@ -1,57 +1,51 @@
 # Weekly Update - Week 10
 
 ## Overview
-During **Week 10**, we focused on completing local testing and development without requiring remote server infrastructure. We performed in-depth 3D GUI rendering and VNC benchmarking on macOS Apple Silicon Docker, validated the FollowLine onboard camera pipeline in headless simulation, and expanded the **ROS 2 Nav2** integration to the **Amazon Warehouse** challenge.
+During **Week 10**, we focused on executing and validating tasks locally on macOS without requiring remote server infrastructure. We tested 3D GUI rendering over VNC, validated the FollowLine onboard camera pipeline in headless simulation, and expanded the **ROS 2 Nav2** integration to the **Amazon Warehouse** challenge.
 
 ---
 
 ## Tasks Completed
 
-### 1. 3D GUI Rendering & VNC Benchmarking on macOS Docker (Tasks T31, T32, T33)
-To evaluate graphical rendering on macOS Apple Silicon (M-series ARM architecture with Rosetta 2 x86_64 emulation), we set up isolated testing environments outside the RoboticsAcademy web application.
+### 1. 3D GUI & VNC Testing on macOS Docker
+To evaluate graphical rendering on macOS Apple Silicon, we tested an isolated Xvfb virtual framebuffer and x11vnc server inside Docker.
 
-```
-+-------------------------------------------------------------------------------+
-|                             TASK T33 TEST RESULTS                             |
-+---------------------+-------------------------+---------------+---------------+
-| Application Tested  | Rendering Pipeline      | Status        | Framerate     |
-+---------------------+-------------------------+---------------+---------------+
-| OpenGL Diagnostics  | Mesa llvmpipe (SW)      | PASSED        | N/A           |
-| RViz2 (ROS 2 GUI)   | OGRE 1 / Standard GL    | PASSED        | 31 FPS        |
-| Gazebo Harmonic GUI | QtQuick / QML GL Shaders| FAILED (Black)| 0 FPS (Blank) |
-+---------------------+-------------------------+---------------+---------------+
-```
-
-* **Task T33 - RViz2 3D OpenGL Test (PASSED):** Standard OpenGL applications like RViz2 ran interactively at **31 FPS** over VNC under software rasterization (`llvmpipe`).
+* **RViz2 3D OpenGL Rendering (Passed):** Successfully launched RViz2 inside the container and connected via VNC. The 3D grid and interactive coordinate displays rendered smoothly at a steady **31 FPS** under software OpenGL rasterization.
 
 <p align="center">
-  <img src="../docs/assets/img/posts/task33_xvfb_gui.png" alt="Task T33 RViz2 3D Grid at 31 FPS in Xvfb over VNC" width="90%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+  <img src="../docs/assets/img/posts/task33_xvfb_gui.png" alt="RViz2 3D Grid at 31 FPS in Xvfb over VNC" width="85%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
 </p>
 
-* **Task T33 - Gazebo GUI Viewport Test (FAILED - Black Viewport):** Gazebo started its UI shell and menus, but the 3D scene viewport remained black due to QtQuick/QML shader compositing limitations under Rosetta 2 software OpenGL.
+* **Gazebo Standalone GUI (Black Viewport):** Tested the standalone Gazebo GUI viewer inside the same VNC environment. The application window and menus loaded, but the 3D scene viewport remained black due to QtQuick/QML shader compositing limitations under Rosetta 2 software OpenGL.
 
 <p align="center">
-  <img src="../docs/assets/img/posts/gazebo_shapes_xvfb.png" alt="Task T33 Gazebo GUI Black Viewport" width="90%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+  <img src="../docs/assets/img/posts/gazebo_shapes_xvfb.png" alt="Gazebo GUI Viewport under Software OpenGL" width="85%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
 </p>
-
-* **Task T31 - Headless Gazebo Simulation & Camera Streaming (PASSED):** Verified that headless Gazebo simulation (`gz sim -s`) generates sensor frames reliably on macOS. Subscribed directly to `/cam_f1_left/image_raw` ($640 \times 480$ RGB) and fixed WebGUI WebSocket throughput in `MeasuringThreadingGUI`.
-
-<p align="center">
-  <img src="../docs/assets/img/posts/follow_line_gazebo_camera.png" alt="Task T31 FollowLine Onboard F1 Camera Feed" width="80%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-</p>
-
-* **Task T32 - Standalone Gazebo Jetty / ROS 2 Jazzy Container:** Built an isolated Docker image `task32_gazebo_jetty:latest` on Ubuntu 24.04 Noble to evaluate upstream Gazebo Harmonic/Jetty rendering.
 
 ---
 
-### 2. Nav2 Navigation Stack Integration (Tasks T1 & T2)
+### 2. FollowLine Onboard Camera Streaming
+We verified that while the Gazebo GUI viewport requires hardware-level shaders, the **headless Gazebo simulation engine generates sensor frames reliably on macOS**.
 
-* **Task T1 - Global Navigation Integration:** Configured headless Gazebo simulation (`global_navigation_nav2.launch.py`), static transforms (`map -> odom`), map server lifecycle management, and `nav2_bridge.py` for WebGUI integration.
-* **Task T2 - Amazon Warehouse Nav2 Integration:** Tuned custom parameters (`nav2_params.yaml`) with rolling local costmap ($6\text{ m} \times 6\text{ m}$ at $0.05\text{ m}$ resolution), laser scan obstacle layer (`/amazon_robot/scan`), and Kiva AGV footprint ($0.45\text{ m}$ radius). Built `amazon_warehouse_nav2.launch.py` and `nav2_warehouse_bridge.py`.
+* **Live Camera Stream Extraction:** Subscribed directly to the F1 car onboard camera topic to extract real-time frames ($640 \times 480$ RGB).
+* **WebGUI Image Delivery:** Streamlined WebSocket image delivery in the web interface to display live camera feeds without latency.
+
+<p align="center">
+  <img src="../docs/assets/img/posts/follow_line_gazebo_camera.png" alt="FollowLine Onboard Camera Feed from Gazebo" width="75%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+</p>
 
 ---
 
-## Key Conclusions for macOS Architecture
+### 3. Nav2 Integration for Amazon Warehouse
+Following our work on the City Navigation challenge, we adapted the **Nav2 Navigation Stack** for the **Amazon Warehouse** exercise:
 
-1. **Decoupled Workflow:** On macOS Apple Silicon, running Gazebo headlessly (`gz sim -s`) coupled with ROS 2 topic visualization (RViz2 or WebGUI canvas widgets) is the stable, high-performance approach.
-2. **Nav2 Compatibility:** Both City Navigation and Amazon Warehouse exercises operate successfully on standard Nav2 launch descriptions.
+* **Custom Costmaps & Footprint:** Configured local and global costmaps with obstacle inflation tailored for the Amazon Kiva AGV platform.
+* **Warehouse Map & Lifecycle Management:** Set up the Nav2 map server to load the warehouse layout and manage node lifecycle transitions.
+* **Navigation Bridge:** Created a bridge node to handle goal dispatch and return planned paths to the web interface.
+
+---
+
+## Key Conclusions
+
+* **Recommended macOS Workflow:** Running Gazebo in headless mode alongside direct ROS 2 topic visualization (RViz2 or WebGUI canvas) provides a stable and performant simulation environment on macOS Apple Silicon.
+* **Standardized Nav2 Pipeline:** Both City Navigation and Amazon Warehouse exercises can operate reliably using standard Nav2 launch configurations.
